@@ -1,3 +1,7 @@
+function getElementTextContent(el) {
+  return el ? el.innerText.trim() : "";
+}
+
 function gatherTextUpToDepth(node, currentDepth, maxDepth) {
   if (currentDepth > maxDepth) return "";
 
@@ -11,91 +15,38 @@ function gatherTextUpToDepth(node, currentDepth, maxDepth) {
       text += gatherTextUpToDepth(child, currentDepth + 1, maxDepth);
     }
   }
-
   return text;
 }
 
-function replaceTextWithRandomMessage(messages) {
-  if (messages.length === 0) {
-    console.warn("No negative messages available to replace text.");
-    return;
-  }
-
-  const elements = document.querySelectorAll("div.update-components-text.relative");
-
-  if (elements.length === 0) {
-    console.warn(
-      'No elements found with the class "update-components-text relative".'
-    );
-    return;
-  }
-
-  // Iterate over each element and replace its text content
-  elements.forEach((element) => {
-    // Select a random message from the array
-    const randomIndex = Math.floor(Math.random() * messages.length);
-    const randomMessage = messages[randomIndex];
-
-    // --------------------------------------------------------------
-    // 1) Check for .comments-comment-entity--reply or a container
-    //    from which you can locate an <h3> that indicates “Author”.
-    // --------------------------------------------------------------
-    const parentWithClass = element.closest(".comments-comment-entity--reply");
-    if (parentWithClass) {
-      // For example, we look for any <h3> that has text "Author" inside
-      const h3WithAuthor = Array.from(parentWithClass.querySelectorAll("h3"))
-        .find((h3) => h3.textContent.toLowerCase().includes("author"));
-
-      // If found, skip replacement
-      if (h3WithAuthor) {
-        console.log("Skipping because an adjacent <h3> has 'Author' inside.");
-        return;
-      }
-    }
-
-    // If the check above did NOT find an <h3> with “Author,” proceed to replace
-    const childSpan = element.querySelector("span");
-    if (childSpan) {
-      childSpan.textContent = randomMessage;
-    } else {
-      // Fallback: replace the entire div's text content if span not found
-      element.textContent = randomMessage;
-    }
-  });
-}
-
-// Function to handle initial and dynamically added elements
 async function handleTextReplacement() {
 
   const negativeMessages = await fetchNegativeMessages();
   if (!negativeMessages || negativeMessages.length === 0) return;
 
-  // Set up a MutationObserver to watch for dynamically added comments
   const observer = new MutationObserver((mutationsList) => {
+
     for (const mutation of mutationsList) {
+
       if (mutation.type === "childList" && mutation.addedNodes.length > 0) {
-        // Iterate over all added nodes
         mutation.addedNodes.forEach((node) => {
+
           if (node.nodeType === Node.ELEMENT_NODE) {
-            // Select elements with the target class within the added node
             const newElements = node.querySelectorAll(
               "div.update-components-text.relative"
             );
+
             newElements.forEach((element) => {
-              // Check if the parent element contains the comment class
               const parent = element.parentElement;
               if (
                 parent &&
                 parent.classList.contains("feed-shared-main-content--comment")
               ) {
-                // Avoid replacing text multiple times
+
                 if (element.dataset.replaced !== "true") {
-                  // -----------------------------
-                  // Similar 'h3 Author' check here
-                  // -----------------------------
                   const parentWithClass = element.closest(
                     ".comments-comment-entity--reply"
                   );
+
                   if (parentWithClass) {
                     const h3WithAuthor = Array.from(
                       parentWithClass.querySelectorAll("h3")
@@ -129,11 +80,31 @@ async function handleTextReplacement() {
                   );
                   const randomMessage = negativeMessages[randomIndex];
 
+                  // proof of concept: appending post text
+                  const postContainer = element.closest(".fie-impression-container");
+                  let postContent = "";
+
+                  if (postContainer) {
+                    
+                    const mainPost = postContainer.querySelector(
+                      ".update-components-text.relative.update-components-update-v2__commentary"
+                    );
+                    if (mainPost) {
+                      const breakWordsSpan = mainPost.querySelector("span.break-words.tvm-parent-container");
+                      if (breakWordsSpan) {
+                        const ltrSpan = breakWordsSpan.querySelector('span[dir="ltr"]');
+                        postContent = getElementTextContent(ltrSpan);
+                      }
+                    }
+                  }
+
+                  const combinedMessage = `${randomMessage}\n[Original Post Extract: ${postContent}]`;
+
                   const childSpan = element.querySelector("span");
                   if (childSpan) {
-                    childSpan.textContent = randomMessage;
+                    childSpan.textContent = combinedMessage;
                   } else {
-                    element.textContent = randomMessage;
+                    element.textContent = combinedMessage;
                   }
 
                   element.dataset.replaced = "true";
@@ -171,7 +142,6 @@ async function fetchNegativeMessages() {
     return [];
   }
 }
-
 
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", handleTextReplacement);
