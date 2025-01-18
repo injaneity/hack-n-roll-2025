@@ -183,9 +183,6 @@ async function handleTextReplacement() {
   // Ensure negativeMessages is defined and has content
   if (!negativeMessages || negativeMessages.length === 0) return;
 
-  // Initial replacement
-  replaceTextWithRandomMessage(negativeMessages);
-
   // Set up a MutationObserver to watch for dynamically added comments
   const observer = new MutationObserver((mutationsList) => {
     for (const mutation of mutationsList) {
