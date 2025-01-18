@@ -101,29 +101,29 @@ const negativeMessages = [
   "This is entirely unimpressive.",
 ];
 
-// Function to fetch negative messages from the text file
-async function fetchNegativeMessages() {
-  try {
-    const response = await fetch(
-      chrome.runtime.getURL("data/negative_messages.txt")
-    );
+// // Function to fetch negative messages from the text file
+// async function fetchNegativeMessages() {
+//   try {
+//     const response = await fetch(
+//       chrome.runtime.getURL("data/negative_messages.txt")
+//     );
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
-    }
+//     if (!response.ok) {
+//       throw new Error(`HTTP error! Status: ${response.status}`);
+//     }
 
-    const text = await response.text();
-    // Split the text into an array of sentences, filtering out any empty lines
-    const messages = text
-      .split("\n")
-      .map((line) => line.trim())
-      .filter((line) => line.length > 0);
-    return messages;
-  } catch (error) {
-    console.error("Failed to fetch negative messages:", error);
-    return [];
-  }
-}
+//     const text = await response.text();
+//     // Split the text into an array of sentences, filtering out any empty lines
+//     const messages = text
+//       .split("\n")
+//       .map((line) => line.trim())
+//       .filter((line) => line.length > 0);
+//     return messages;
+//   } catch (error) {
+//     console.error("Failed to fetch negative messages:", error);
+//     return [];
+//   }
+// }
 
 // Function to replace text in elements with the class "update-components-text"
 function replaceTextWithRandomMessage(messages) {
@@ -149,6 +149,23 @@ function replaceTextWithRandomMessage(messages) {
     // Select a random message from the array
     const randomIndex = Math.floor(Math.random() * messages.length);
     const randomMessage = messages[randomIndex];
+
+    const parentWithClass = element.closest(".comments-comment-entity--reply");
+
+    if (parentWithClass) {
+      const authorChild = Array.from(
+        parentWithClass.querySelectorAll("*")
+      ).find((child) => child.textContent.trim() === "Author");
+
+      if (authorChild) {
+        console.log("Found child with text 'Author':", authorChild);
+        return;
+      } else {
+        console.log("No child with text 'Author' found.");
+      }
+    } else {
+      console.log("Parent with the specified class not found.");
+    }
 
     // Replace the inner text of the child span to preserve any HTML structure
     const childSpan = element.querySelector("span");
