@@ -1,114 +1,26 @@
-// const negativeMessages = [
-//   "This is absolutely terrible.",
-//   "I can't believe how bad this is.",
-//   "This is such a disappointment.",
-//   "Horrible execution.",
-//   "Completely unimpressive.",
-//   "This needs a lot of work.",
-//   "Utterly underwhelming.",
-//   "This is not worth the effort.",
-//   "Such a waste of time.",
-//   "This is shockingly bad.",
-//   "Terrible idea.",
-//   "Who thought this was a good idea?",
-//   "I expected much better.",
-//   "Very poorly done.",
-//   "This is just plain bad.",
-//   "So frustrating to see.",
-//   "This is absolutely subpar.",
-//   "I wouldn't recommend this to anyone.",
-//   "So many things wrong here.",
-//   "Such a letdown.",
-//   "This doesn't even make sense.",
-//   "Awful execution overall.",
-//   "I really hate this.",
-//   "This lacks any real effort.",
-//   "What a disaster.",
-//   "This needs a complete overhaul.",
-//   "Just terrible.",
-//   "This is laughably bad.",
-//   "So poorly thought out.",
-//   "This is way below expectations.",
-//   "This makes no sense.",
-//   "How can anyone like this?",
-//   "Terribly done.",
-//   "What a mess.",
-//   "This is absolutely atrocious.",
-//   "So disappointing.",
-//   "This is garbage.",
-//   "This is an insult to effort.",
-//   "Horribly designed.",
-//   "This needs to be scrapped.",
-//   "Not worth even a second look.",
-//   "Absolutely pathetic.",
-//   "This is truly horrendous.",
-//   "Not even close to decent.",
-//   "This is outright offensive.",
-//   "This is a waste of potential.",
-//   "So underwhelming.",
-//   "This isn't even acceptable.",
-//   "This is completely broken.",
-//   "Awfully managed.",
-//   "What were they thinking?",
-//   "This has no redeeming qualities.",
-//   "So irritating to deal with.",
-//   "This is a failure.",
-//   "A real eyesore.",
-//   "Who approved this?",
-//   "This should not exist.",
-//   "Horrendously done.",
-//   "So below average.",
-//   "This is incredibly poor.",
-//   "This reeks of laziness.",
-//   "Absolutely unacceptable.",
-//   "This is trash.",
-//   "Terribly unprofessional.",
-//   "This is totally inadequate.",
-//   "This is way off the mark.",
-//   "Such a poor effort.",
-//   "This can't be serious.",
-//   "An absolute joke.",
-//   "This is disastrously bad.",
-//   "Not worth mentioning.",
-//   "I can't stand this.",
-//   "This is deeply flawed.",
-//   "This is hopeless.",
-//   "This could not be worse.",
-//   "An epic failure.",
-//   "Nothing works here.",
-//   "This is shockingly ineffective.",
-//   "This isn't even salvageable.",
-//   "Such poor judgment.",
-//   "This is an embarrassment.",
-//   "So much for quality.",
-//   "Not even close to good.",
-//   "This is utterly pointless.",
-//   "Completely incompetent.",
-//   "This is bottom-tier work.",
-//   "This is cringe-worthy.",
-//   "This has no value.",
-//   "Just plain awful.",
-//   "This should never have seen the light of day.",
-//   "What a trainwreck.",
-//   "This is beyond saving.",
-//   "No thought went into this.",
-//   "This is completely amateurish.",
-//   "This is hopelessly flawed.",
-//   "This feels insulting.",
-//   "How did this even happen?",
-//   "No effort here whatsoever.",
-//   "This is absolutely not okay.",
-//   "This is entirely unimpressive.",
-// ];
+function gatherTextUpToDepth(node, currentDepth, maxDepth) {
+  if (currentDepth > maxDepth) return "";
 
-// Function to replace text in elements with the class "update-components-text"
+  let text = "";
+  if (node.nodeType === Node.TEXT_NODE) {
+    text += node.textContent;
+  } 
+
+  else if (node.nodeType === Node.ELEMENT_NODE) {
+    for (let child of node.childNodes) {
+      text += gatherTextUpToDepth(child, currentDepth + 1, maxDepth);
+    }
+  }
+
+  return text;
+}
+
 function replaceTextWithRandomMessage(messages) {
   if (messages.length === 0) {
     console.warn("No negative messages available to replace text.");
     return;
   }
 
-  // Select all elements with the specified class
   const elements = document.querySelectorAll("div.update-components-text.relative");
 
   if (elements.length === 0) {
@@ -190,7 +102,7 @@ async function handleTextReplacement() {
                     ).find((h3) =>
                       h3.textContent.toLowerCase().includes("author")
                     );
-                    // If found, skip
+
                     if (h3WithAuthor) {
                       console.log(
                         "Skipping because an adjacent <h3> has 'Author' inside."
@@ -199,7 +111,19 @@ async function handleTextReplacement() {
                     }
                   }
 
-                  // If no <h3> with “Author,” do the replacement
+                  const commentContainer = element.closest(".comments-comment-entity");
+                  if (commentContainer) {
+                    // -----------------------------------------------------------
+                    // Gather text up to depth 6, convert to lowercase, check for "author"
+                    // -----------------------------------------------------------
+                    const partialText = gatherTextUpToDepth(commentContainer, 0, 6).toLowerCase();
+
+                    if (partialText.includes("author")) {
+                      console.log("Skipping because 'author' was found within 6 nesting levels.");
+                      return;
+                    }
+                  }
+
                   const randomIndex = Math.floor(
                     Math.random() * negativeMessages.length
                   );
@@ -212,7 +136,6 @@ async function handleTextReplacement() {
                     element.textContent = randomMessage;
                   }
 
-                  // Mark the element as replaced
                   element.dataset.replaced = "true";
                 }
               }
@@ -223,7 +146,6 @@ async function handleTextReplacement() {
     }
   });
 
-  // Start observing the document body for added child nodes
   observer.observe(document.body, { childList: true, subtree: true });
 }
 
@@ -238,7 +160,6 @@ async function fetchNegativeMessages() {
     }
 
     const text = await response.text();
-    // Split the text into an array of lines, filtering out any empty lines
     const messages = text
       .split("\n")
       .map((line) => line.trim())
