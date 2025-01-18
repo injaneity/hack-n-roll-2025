@@ -5,7 +5,12 @@
   "version": "1.0",
   "description": "Replaces all comments on LinkedIn posts with discouraging messages",
   "author": "Zane Chee, Wei Sin Tai",
-
+  "web_accessible_resources": [
+    {
+      "resources": ["data/negative_messages.txt"],
+      "matches": ["<all_urls>"]
+    }
+  ],
   "content_scripts": [
     {
       "matches": ["*://*/*"],
