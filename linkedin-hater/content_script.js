@@ -101,30 +101,6 @@ const negativeMessages = [
   "This is entirely unimpressive.",
 ];
 
-// // Function to fetch negative messages from the text file
-// async function fetchNegativeMessages() {
-//   try {
-//     const response = await fetch(
-//       chrome.runtime.getURL("data/negative_messages.txt")
-//     );
-
-//     if (!response.ok) {
-//       throw new Error(`HTTP error! Status: ${response.status}`);
-//     }
-
-//     const text = await response.text();
-//     // Split the text into an array of sentences, filtering out any empty lines
-//     const messages = text
-//       .split("\n")
-//       .map((line) => line.trim())
-//       .filter((line) => line.length > 0);
-//     return messages;
-//   } catch (error) {
-//     console.error("Failed to fetch negative messages:", error);
-//     return [];
-//   }
-// }
-
 // Function to replace text in elements with the class "update-components-text"
 function replaceTextWithRandomMessage(messages) {
   if (messages.length === 0) {
@@ -133,9 +109,7 @@ function replaceTextWithRandomMessage(messages) {
   }
 
   // Select all elements with the specified class
-  const elements = document.querySelectorAll(
-    "div.update-components-text.relative"
-  );
+  const elements = document.querySelectorAll("div.update-components-text.relative");
 
   if (elements.length === 0) {
     console.warn(
@@ -150,24 +124,24 @@ function replaceTextWithRandomMessage(messages) {
     const randomIndex = Math.floor(Math.random() * messages.length);
     const randomMessage = messages[randomIndex];
 
+    // --------------------------------------------------------------
+    // 1) Check for .comments-comment-entity--reply or a container
+    //    from which you can locate an <h3> that indicates “Author”.
+    // --------------------------------------------------------------
     const parentWithClass = element.closest(".comments-comment-entity--reply");
-
     if (parentWithClass) {
-      const authorChild = Array.from(
-        parentWithClass.querySelectorAll("*")
-      ).find((child) => child.textContent.trim() === "Author");
+      // For example, we look for any <h3> that has text "Author" inside
+      const h3WithAuthor = Array.from(parentWithClass.querySelectorAll("h3"))
+        .find((h3) => h3.textContent.toLowerCase().includes("author"));
 
-      if (authorChild) {
-        console.log("Found child with text 'Author':", authorChild);
+      // If found, skip replacement
+      if (h3WithAuthor) {
+        console.log("Skipping because an adjacent <h3> has 'Author' inside.");
         return;
-      } else {
-        console.log("No child with text 'Author' found.");
       }
-    } else {
-      console.log("Parent with the specified class not found.");
     }
 
-    // Replace the inner text of the child span to preserve any HTML structure
+    // If the check above did NOT find an <h3> with “Author,” proceed to replace
     const childSpan = element.querySelector("span");
     if (childSpan) {
       childSpan.textContent = randomMessage;
@@ -203,6 +177,28 @@ async function handleTextReplacement() {
               ) {
                 // Avoid replacing text multiple times
                 if (element.dataset.replaced !== "true") {
+                  // -----------------------------
+                  // Similar 'h3 Author' check here
+                  // -----------------------------
+                  const parentWithClass = element.closest(
+                    ".comments-comment-entity--reply"
+                  );
+                  if (parentWithClass) {
+                    const h3WithAuthor = Array.from(
+                      parentWithClass.querySelectorAll("h3")
+                    ).find((h3) =>
+                      h3.textContent.toLowerCase().includes("author")
+                    );
+                    // If found, skip
+                    if (h3WithAuthor) {
+                      console.log(
+                        "Skipping because an adjacent <h3> has 'Author' inside."
+                      );
+                      return;
+                    }
+                  }
+
+                  // If no <h3> with “Author,” do the replacement
                   const randomIndex = Math.floor(
                     Math.random() * negativeMessages.length
                   );
