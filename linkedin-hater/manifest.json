@@ -1,10 +1,10 @@
 {
-  "name": "6-Time Super Bowl Champion Tom Brady",
-  "short_name": "Brady G.O.A.T. Check",
-  "manifest_version": 2,
+  "name": "LinkedIn Hater",
+  "short_name": "LinkedIn but Usable",
+  "manifest_version": 3,
   "version": "1.0",
-  "description": "Adds the text '6-time Super Bowl champion' before all mentions of Tom Brady",
-  "author": "Connor Finnegan",
+  "description": "Replaces all comments on LinkedIn posts with discouraging messages",
+  "author": "Zane Chee, Wei Sin Tai",
 
   "content_scripts": [
     {
