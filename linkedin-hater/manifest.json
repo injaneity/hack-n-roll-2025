@@ -6,13 +6,12 @@
   "description": "Adds the text '6-time Super Bowl champion' before all mentions of Tom Brady",
   "author": "Connor Finnegan",
 
-  "content_scripts":
-  [
-      {
-          "matches": ["*://*/*"],
-          "all_frames": true,
-          "js": ["content_script.js"],
-          "run_at": "document_end"
-      }
+  "content_scripts": [
+    {
+      "matches": ["*://*/*"],
+      "all_frames": true,
+      "js": ["content_script.js"],
+      "run_at": "document_end"
+    }
   ]
 }
