@@ -1,18 +1,28 @@
-# LinkedIn Hater
-
 Ever felt that LinkedIn was too wholesome sometimes? Wish you'd see something besides a "Congratulations!" under a post about your hard work? Or just praying on someone's downfall? You're in luck! LinkedIn Hater is a Chrome browser extension that replaces all non-author comments on a post with discouraging messages.
 
 Co-created by [Wei Sin Tai](github.com/weisintai) & [Zane Chee](github.com/injaneity)
 
 ## Running This Extension
 
-1. Clone this repository.
+1. Clone this repository
+
+`git clone https://github.com/injaneity/hack-n-roll-2025`
+
 2. Load this directory in Chrome as an [unpacked extension](https://developer.chrome.com/docs/extensions/mv3/getstarted/development-basics/#load-unpacked).
+
+<img width="394" alt="image" src="https://github.com/user-attachments/assets/682dda87-0360-4c05-a2f7-82e6bfd704a3" />
+
+<img width="181" alt="image" src="https://github.com/user-attachments/assets/a9b5961c-2e8a-4afd-94ca-dc42750ac2cf" />
+
 3. Click the extension icon in the Chrome toolbar, then select the "LinkedIn Hater" extension. A popup will appear.
+<img width="428" alt="image" src="https://github.com/user-attachments/assets/81c51187-697c-43eb-b031-dda3630769b6" />
+
+4. Proceed to unsafe (trust us! it's safe)
 
 ### Credits
 
 Idea Inspiration: [Vince Tan](github.com/vincetyy)
+Legal Advice: [Gabriel Ong](github.com/gongahkia)
 
 # Legal Notice
 
