@@ -8,9 +8,7 @@ function gatherTextUpToDepth(node, currentDepth, maxDepth) {
   let text = "";
   if (node.nodeType === Node.TEXT_NODE) {
     text += node.textContent;
-  } 
-
-  else if (node.nodeType === Node.ELEMENT_NODE) {
+  } else if (node.nodeType === Node.ELEMENT_NODE) {
     for (let child of node.childNodes) {
       text += gatherTextUpToDepth(child, currentDepth + 1, maxDepth);
     }
@@ -19,17 +17,13 @@ function gatherTextUpToDepth(node, currentDepth, maxDepth) {
 }
 
 async function handleTextReplacement() {
-
   const negativeMessages = await fetchNegativeMessages();
   if (!negativeMessages || negativeMessages.length === 0) return;
 
   const observer = new MutationObserver((mutationsList) => {
-
     for (const mutation of mutationsList) {
-
       if (mutation.type === "childList" && mutation.addedNodes.length > 0) {
         mutation.addedNodes.forEach((node) => {
-
           if (node.nodeType === Node.ELEMENT_NODE) {
             const newElements = node.querySelectorAll(
               "div.update-components-text.relative"
@@ -41,7 +35,6 @@ async function handleTextReplacement() {
                 parent &&
                 parent.classList.contains("feed-shared-main-content--comment")
               ) {
-
                 if (element.dataset.replaced !== "true") {
                   const parentWithClass = element.closest(
                     ".comments-comment-entity--reply"
@@ -62,15 +55,23 @@ async function handleTextReplacement() {
                     }
                   }
 
-                  const commentContainer = element.closest(".comments-comment-entity");
+                  const commentContainer = element.closest(
+                    ".comments-comment-entity"
+                  );
                   if (commentContainer) {
                     // -----------------------------------------------------------
                     // Gather text up to depth 6, convert to lowercase, check for "author"
                     // -----------------------------------------------------------
-                    const partialText = gatherTextUpToDepth(commentContainer, 0, 6).toLowerCase();
+                    const partialText = gatherTextUpToDepth(
+                      commentContainer,
+                      0,
+                      6
+                    ).toLowerCase();
 
                     if (partialText.includes("author")) {
-                      console.log("Skipping because 'author' was found within 6 nesting levels.");
+                      console.log(
+                        "Skipping because 'author' was found within 6 nesting levels."
+                      );
                       return;
                     }
                   }
@@ -81,24 +82,29 @@ async function handleTextReplacement() {
                   const randomMessage = negativeMessages[randomIndex];
 
                   // proof of concept: appending post text
-                  const postContainer = element.closest(".fie-impression-container");
+                  const postContainer = element.closest(
+                    ".fie-impression-container"
+                  );
                   let postContent = "";
 
                   if (postContainer) {
-                    
                     const mainPost = postContainer.querySelector(
                       ".update-components-text.relative.update-components-update-v2__commentary"
                     );
                     if (mainPost) {
-                      const breakWordsSpan = mainPost.querySelector("span.break-words.tvm-parent-container");
+                      const breakWordsSpan = mainPost.querySelector(
+                        "span.break-words.tvm-parent-container"
+                      );
                       if (breakWordsSpan) {
-                        const ltrSpan = breakWordsSpan.querySelector('span[dir="ltr"]');
+                        const ltrSpan =
+                          breakWordsSpan.querySelector('span[dir="ltr"]');
                         postContent = getElementTextContent(ltrSpan);
                       }
                     }
                   }
 
-                  const combinedMessage = `${randomMessage}\n[Original Post Extract: ${postContent}]`;
+                  // \n[Original Post Extract: ${postContent}]
+                  const combinedMessage = `${randomMessage}`;
 
                   const childSpan = element.querySelector("span");
                   if (childSpan) {
