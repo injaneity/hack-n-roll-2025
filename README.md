@@ -3,7 +3,7 @@ Ever felt that LinkedIn was too wholesome sometimes? Wish you'd see something be
 
 LinkedIn Hater is a Chrome browser extension that replaces all non-author comments on a post with discouraging messages.
 
-Co-created by [Wei Sin Tai](github.com/weisintai) & [Zane Chee](github.com/injaneity)
+Co-created by [Wei Sin Tai](https://github.com/weisintai) & [Zane Chee](https://github.com/injaneity)
 
 _For any feature requests, kindly open a pull request or issue on Github._
 
